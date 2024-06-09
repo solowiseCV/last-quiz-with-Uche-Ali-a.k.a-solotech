@@ -4,18 +4,28 @@ let votes = {
 };
 
 document.getElementById('messi').addEventListener('click', function() {
+    const userName = prompt("Please enter your name:");
+    if (!userName) {
+        alert("Name is required to vote.");
+        return;
+    }
     alert("Tappi, you are wrong na BACK OF TV U DEY WATCH");
     let retry = confirm("Try wisely again?");
     if (retry) {
         location.reload(); // This will reload the page
     } else {
-        vote('messi');
+        vote('messi', userName);
     }
 });
 
 document.getElementById('ronaldo').addEventListener('click', function() {
+    const userName = prompt("Please enter your name:");
+    if (!userName) {
+        alert("Name is required to vote.");
+        return;
+    }
     alert("Congratulations! You are indeed a football lover.");
-    vote('ronaldo');
+    vote('ronaldo', userName);
     location.reload(); // This will reload the page
 });
 
@@ -35,16 +45,22 @@ document.getElementById('ronaldo').addEventListener('mouseout', function() {
     document.getElementById('message').innerText = "";
 });
 
-async function vote(player) {
+async function vote(player, userName) {
     try {
-        await fetch('https://last-quiz-by-solotech.onrender.com/vote', {
+        const response = await fetch('https://last-quiz-by-solotech.onrender.com/vote', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ player }),
+            body: JSON.stringify({ player, userName }),
         });
-        fetchVotes();
+
+        const result = await response.json();
+        if (response.status === 400) {
+            alert(result.message);
+        } else {
+            fetchVotes();
+        }
     } catch (err) {
         console.error('Error:', err);
     }
